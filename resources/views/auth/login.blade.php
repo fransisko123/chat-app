@@ -36,6 +36,11 @@
                     <div class="card-header bg-dark">
                         <h4 class="text-center text-white f-w-500 mb-0">Login with your email</h4>
                     </div>
+                    @if ($errors->any())
+                        <div class="alert alert-danger" role="alert">
+                            {{ $errors->first() }}
+                        </div>
+                    @endif
                     <div class="card-body">
                         <form method="POST" action="{{ route('login.process') }}">
                             @csrf

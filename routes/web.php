@@ -10,4 +10,8 @@ Route::post('/login', [AuthController::class, 'loginProcess'])->name('login.proc
 Route::get('/register', [AuthController::class, 'registerPage'])->name('register');
 Route::post('/register', [AuthController::class, 'registerProcess'])->name('register.process');
 
-Route::get('/chat', [ChatController::class, 'index'])->name('chat');
+
+Route::middleware(['auth.login'])->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat');
+});

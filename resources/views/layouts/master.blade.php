@@ -70,6 +70,8 @@
     <!-- [ Main Content ] end -->
 
     @include('layouts.footer')
+
+    @stack('scripts')
     <!-- Required Js -->
     <script src="{{ asset('assets/js/plugins/popper.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/simplebar.min.js') }}"></script>

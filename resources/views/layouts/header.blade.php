@@ -388,7 +388,7 @@
                             />
                           </div>
                           <div class="flex-grow-1 mx-3">
-                            <h5 class="mb-0">Carson Darrin</h5>
+                            <h5 class="mb-0">{{ auth()->user()->name }}</h5>
                             <a
                               class="link-primary"
                               href="mailto:carson.darrin@company.io"

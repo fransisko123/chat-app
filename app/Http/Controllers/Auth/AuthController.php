@@ -10,16 +10,33 @@ class AuthController extends Controller
 {
     public function loginPage()
     {
+        if (auth()->check()) {
+            return redirect()->route('chat');
+        }
+
         return view('auth.login');
     }
 
     public function loginProcess(Request $request)
     {
-        dd($request->all());
+        $data = $request->validate([
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string|min:8',
+        ]);
+
+        if (auth()->attempt($data)) {
+            return redirect()->route('chat')->with('success', 'Login successful!');
+        }
+
+        return back()->withErrors(['error' => 'Invalid credentials'])->withInput();
     }
 
     public function registerPage()
     {
+        if (auth()->check()) {
+            return redirect()->route('chat');
+        }
+
         return view('auth.register');
     }
 
@@ -36,5 +53,11 @@ class AuthController extends Controller
 
         auth()->login($user);
         return redirect()->route('chat')->with('success', 'Registration successful!');
+    }
+
+    public function logout()
+    {
+        auth()->logout();
+        return redirect()->route('login')->with('success', 'Logout successful!');
     }
 }
