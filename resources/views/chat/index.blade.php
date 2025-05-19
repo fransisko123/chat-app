@@ -88,64 +88,64 @@
                           <div class="scroll-block">
                             <div class="card-body p-0">
                               <div class="list-group list-group-flush">
-                                <div
-                                  class="list-group-item list-group-item-action p-3"
-                                >
+                                @foreach ($conversations as $conv)
+                                <div class="list-group-item list-group-item-action p-3">
                                   <div class="d-flex align-items-center">
                                     <div class="flex-shrink-0">
                                       <div class="chat-avtar">
                                         <img
                                           class="rounded-circle img-fluid wid-40"
-                                          src="{{ asset('assets/images/user/avatar-1.jpg') }}"
+                                          src="{{ asset('assets/images/user/' . $conv->avatar) }}"
                                           alt="User image"
                                         />
                                         <div
                                           class="bg-success chat-badge"
                                         ></div>
                                       </div>
-                                    </div>
-                                    <div class="flex-grow-1 mx-2">
-                                      <h6 class="mb-0">John Doe</h6>
-                                      <div class="d-flex text-sm text-muted">
+                                      <div class="flex-grow-1 mx-2">
+                                        <h6 class="mb-0">John Doe</h6>
+                                        <div class="d-flex text-sm text-muted">
+                                          <div
+                                            class="flex-grow-1 position-relative"
+                                          >
+                                            <span
+                                              class="mb-0 text-truncate position-absolute top-0 start-0 w-100"
+                                              >when meeting schedule</span
+                                            >
+                                          </div>
+                                          <span>1 week ago</span>
+                                        </div>
+                                      </div>
+                                      <div class="dropdown">
+                                        <a
+                                          class="avtar avtar-xs btn-link-secondary dropdown-toggle arrow-none"
+                                          href="#"
+                                          data-bs-toggle="dropdown"
+                                          aria-haspopup="true"
+                                          aria-expanded="false"
+                                          ><i
+                                            class="ti ti-dots-vertical f-18"
+                                          ></i
+                                        ></a>
                                         <div
-                                          class="flex-grow-1 position-relative"
+                                          class="dropdown-menu dropdown-menu-end"
                                         >
-                                          <span
-                                            class="mb-0 text-truncate position-absolute top-0 start-0 w-100"
-                                            >when meeting schedule</span
+                                          <a class="dropdown-item" href="#"
+                                            >Delete conversation</a
+                                          >
+                                          <a class="dropdown-item" href="#"
+                                            >Mark as read</a
+                                          >
+                                          <a class="dropdown-item" href="#"
+                                            >Profile</a
                                           >
                                         </div>
-                                        <span>1 week ago</span>
-                                      </div>
-                                    </div>
-                                    <div class="dropdown">
-                                      <a
-                                        class="avtar avtar-xs btn-link-secondary dropdown-toggle arrow-none"
-                                        href="#"
-                                        data-bs-toggle="dropdown"
-                                        aria-haspopup="true"
-                                        aria-expanded="false"
-                                        ><i
-                                          class="ti ti-dots-vertical f-18"
-                                        ></i
-                                      ></a>
-                                      <div
-                                        class="dropdown-menu dropdown-menu-end"
-                                      >
-                                        <a class="dropdown-item" href="#"
-                                          >Delete conversation</a
-                                        >
-                                        <a class="dropdown-item" href="#"
-                                          >Mark as read</a
-                                        >
-                                        <a class="dropdown-item" href="#"
-                                          >Profile</a
-                                        >
                                       </div>
                                     </div>
                                   </div>
                                 </div>
-                                <div
+                                    @endforeach
+                                    <div
                                   class="list-group-item list-group-item-action p-3"
                                 >
                                   <div class="d-flex align-items-center">

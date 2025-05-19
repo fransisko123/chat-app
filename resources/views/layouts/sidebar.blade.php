@@ -60,7 +60,7 @@
         <div class="navbar-content">
           <ul class="pc-navbar">
             <li class="pc-item active">
-              <a href="../widget/w_statistics.html" class="pc-link"
+              <a href="{{ route('chat') }}" class="pc-link"
                 ><span class="pc-micon"
                   ><i class="ph-duotone ph-chats-circle"></i> </span
                 ><span class="pc-mtext">Chat</span></a
