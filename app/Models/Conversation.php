@@ -10,7 +10,14 @@ class Conversation extends Model
 {
     protected $fillable = ['user_one_id', 'user_two_id'];
 
-    public function message()
+    protected $appends = ['participants'];
+
+    public function getParticipantsAttribute()
+    {
+        return collect([$this->userOne, $this->userTwo]);
+    }
+
+    public function messages()
     {
         return $this->hasMany(Message::class);
     }
@@ -23,6 +30,11 @@ class Conversation extends Model
     public function userTwo()
     {
         return $this->belongsTo(User::class, 'user_two_id');
+    }
+
+    public function latestMessage()
+    {
+        return $this->hasOne(Message::class)->latestOfMany();
     }
 
     public function getOtherParticipant(User $authUser)

@@ -107,16 +107,19 @@
       for (var t = 0; t < tc.length; t++) {
         new SimpleBar(tc[t]);
       }
+
       setTimeout(function () {
-        var element = document.querySelector(
-          ".chat-content .scroll-block .simplebar-content-wrapper"
-        );
-        var elementheight = document.querySelector(
-          ".chat-content .scroll-block .simplebar-content"
-        );
-        var off = elementheight.getBoundingClientRect();
-        var h = off.height;
-        element.scrollTop += h;
+        // Jalankan hanya jika elemen .chat-content ada
+        var chatContent = document.querySelector(".chat-content");
+        if (!chatContent) return;
+
+        var wrapper = chatContent.querySelector(".scroll-block .simplebar-content-wrapper");
+        var content = chatContent.querySelector(".scroll-block .simplebar-content");
+
+        if (wrapper && content) {
+          var h = content.getBoundingClientRect().height;
+          wrapper.scrollTop = h;
+        }
       }, 100);
     </script>
     <!-- [Page Specific JS] end -->
