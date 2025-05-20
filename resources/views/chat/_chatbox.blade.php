@@ -164,44 +164,47 @@
     </div>
   </div>
   <div class="card-footer border-top pt-2 px-3 pb-0">
-    <div class="input-group align-items-center">
-      <ul class="list-inline me-auto mb-0">
-        <li class="list-inline-item">
-          <a
-            href="#"
-            class="avtar avtar-xs btn-link-secondary"
-            ><i class="ti ti-paperclip f-18"></i
-          ></a>
-        </li>
-        <li class="list-inline-item">
-          <a
-            href="#"
-            class="avtar avtar-xs btn-link-secondary"
-            ><i class="ti ti-photo f-18"></i
-          ></a>
-        </li>
-        <li class="list-inline-item">
-          <a
-            href="#"
-            class="avtar avtar-xs btn-link-secondary"
-            ><i class="ti ti-mood-smile f-18"></i
-          ></a>
-        </li>
-      </ul>
-      <input
-        type="text"
-        class="form-control shadow-none border-0 bg-transparent"
-        placeholder="Type a Message"
-      />
-      <ul class="list-inline ms-auto mb-0">
-        <li class="list-inline-item">
-          <a
-            href="#"
-            class="avtar avtar-s rounded-circlen btn btn-primary"
-            ><i class="ti ti-send f-18"></i
-          ></a>
-        </li>
-      </ul>
-    </div>
+    <form id="chat-send-form">
+      <input type="hidden" name="conversation_id" value="{{ $activeConversation->id }}">
+      <div class="input-group align-items-center">
+        <ul class="list-inline me-auto mb-0">
+          <li class="list-inline-item">
+            <a
+              href="#"
+              class="avtar avtar-xs btn-link-secondary"
+              ><i class="ti ti-paperclip f-18"></i
+            ></a>
+          </li>
+          <li class="list-inline-item">
+            <a
+              href="#"
+              class="avtar avtar-xs btn-link-secondary"
+              ><i class="ti ti-photo f-18"></i
+            ></a>
+          </li>
+          <li class="list-inline-item">
+            <a
+              href="#"
+              class="avtar avtar-xs btn-link-secondary"
+              ><i class="ti ti-mood-smile f-18"></i
+            ></a>
+          </li>
+        </ul>
+        <input
+          type="text"
+          name="body"
+          class="form-control shadow-none border-0 bg-transparent"
+          placeholder="Type a Message"
+          required
+        />
+        <ul class="list-inline ms-auto mb-0">
+          <li class="list-inline-item">
+            <button type="submit" class="btn btn-primary">
+              <i class="ti ti-send f-18"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </form>
   </div>
 </div>

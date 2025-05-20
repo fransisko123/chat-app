@@ -11,6 +11,8 @@ class Message extends Model
 {
     protected $fillable = ['conversation_id', 'sender_id', 'body', 'attachment'];
 
+    protected $with = ['sender', 'reads'];
+
     public function sender()
     {
         return $this->belongsTo(User::class, 'sender_id');
