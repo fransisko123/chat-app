@@ -47,4 +47,27 @@ class ChatController extends Controller
             'messages' => $messages
         ]);
     }
+
+    public function send(Request $request)
+    {
+        $request->validate([
+            'conversation_id' => 'required|exists:conversations,id',
+            'body' => 'required|string|max:1000',
+        ]);
+
+        $message = Message::create([
+            'conversation_id' => $request->conversation_id,
+            'sender_id' => auth()->id(),
+            'body' => $request->body,
+        ]);
+
+        // Tandai pesan sebagai terbaca oleh pengirim
+        $message->reads()->create(['user_id' => auth()->id()]);
+
+        // Untuk response, bisa return view pesan parsial atau JSON
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Message sent.',
+        ]);
+    }
 }
