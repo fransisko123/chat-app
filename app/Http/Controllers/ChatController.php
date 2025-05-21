@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Message;
+use App\Events\MessageSent;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
 
@@ -56,19 +57,23 @@ class ChatController extends Controller
             'body' => 'required|string|max:1000',
         ]);
 
+        $conversation = \App\Models\Conversation::findOrFail($request->conversation_id);
+
+        // Pastikan user adalah peserta conversation
+        if (!in_array(auth()->id(), [$conversation->user_one_id, $conversation->user_two_id])) {
+            abort(403, 'Unauthorized');
+        }
+
+        // CREATE MESSAGE
         $message = Message::create([
-            'conversation_id' => $request->conversation_id,
+            'conversation_id' => $conversation->id,
             'sender_id' => auth()->id(),
             'body' => $request->body,
         ]);
 
-        // Tandai pesan sebagai terbaca oleh pengirim
-        $message->reads()->create(['user_id' => auth()->id()]);
+        // Broadcast message to the conversation channel
+        broadcast(new MessageSent($message))->toOthers();
 
-        // Untuk response, bisa return view pesan parsial atau JSON
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Message sent.',
-        ]);
+        return response()->json(['status' => 'success']);
     }
 }

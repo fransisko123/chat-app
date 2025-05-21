@@ -165,6 +165,7 @@
   </div>
   <div class="card-footer border-top pt-2 px-3 pb-0">
     <form id="chat-send-form">
+      @csrf
       <input type="hidden" name="conversation_id" value="{{ $activeConversation->id }}">
       <div class="input-group align-items-center">
         <ul class="list-inline me-auto mb-0">
@@ -208,3 +209,114 @@
     </form>
   </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $(function () {
+    const $form = $('#chat-send-form');
+    console.log("Form element:", $form);
+
+    if (!$form.length) return;
+
+    $form.on('submit', async function (e) {
+      e.preventDefault();
+
+      // debugger; // <--- Ini akan terpanggil jika form ada
+
+      const $input = $form.find('input[name="body"]');
+      const body = $input.val().trim();
+      if (!body) return;
+
+      const csrf = $form.find('input[name="_token"]').val();
+      const conversation_id = $form.find('input[name="conversation_id"]').val();
+
+      try {
+        await fetch("{{ route('chat.send') }}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": csrf,
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({ conversation_id, body })
+        });
+
+        $input.val(""); // Clear input after successful send
+      } catch (err) {
+        alert("Gagal mengirim pesan");
+        console.error(err);
+      }
+    });
+  });
+</script>
+
+
+<script type="module">
+  import Echo from 'laravel-echo';
+  import Pusher from 'pusher-js';
+
+  window.Pusher = Pusher;
+
+  window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: import.meta.env.VITE_PUSHER_APP_KEY,
+    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+    forceTLS: true,
+  });
+
+  const conversationId = @json($activeConversation->id ?? null);
+  const userId = @json(auth()->id());
+
+  window.Echo.private(`conversations.${conversationId}`)
+    .listen('MessageSent', (e) => {
+      const msg = e.message;
+      const isOwn = msg.sender_id === userId;
+      const container = document.querySelector('.chat-message .card-body');
+
+      const html = isOwn
+        ? `<div class="message-out">
+            <div class="d-flex align-items-end flex-column">
+                <p class="mb-1 text-muted"><small>Baru saja</small></p>
+                <div class="message d-flex align-items-end flex-column">
+                    <div class="d-flex align-items-center mb-1 chat-msg">
+                        <div class="flex-grow-1 ms-3">
+                            <div class="msg-content bg-primary">
+                                <p class="mb-0 text-white">${msg.body}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>`
+        : `<div class="message-in">
+            <div class="d-flex">
+                <div class="flex-shrink-0">
+                    <div class="chat-avtar">
+                        <img class="rounded-circle img-fluid wid-40"
+                            src="${msg.sender.avatar_url || '/assets/images/user/avatar-3.jpg'}"
+                            alt="${msg.sender.name}">
+                        <i class="chat-badge bg-success"></i>
+                    </div>
+                </div>
+                <div class="flex-grow-1 mx-3">
+                    <div class="d-flex align-items-start flex-column">
+                        <p class="mb-1 text-muted">${msg.sender.name} <small>Baru saja</small></p>
+                        <div class="message d-flex align-items-start flex-column">
+                            <div class="d-flex align-items-center mb-1 chat-msg">
+                                <div class="flex-grow-1 me-3">
+                                    <div class="msg-content card card-border-none mb-0">
+                                        <p class="mb-0">${msg.body}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>`;
+
+      container.insertAdjacentHTML('beforeend', html);
+      container.scrollTop = container.scrollHeight;
+    });
+</script>
