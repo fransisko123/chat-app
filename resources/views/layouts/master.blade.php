@@ -21,6 +21,10 @@
     <meta name="author" content="phoenixcoded" />
     <!-- [Favicon] icon -->
     <link rel="icon" href="{{ asset('assets/images/favicon.svg') }}" type="image/x-icon" />
+
+    {{-- Meta User ID --}}
+    <meta name="user-id" content="{{ auth()->id() }}">
+
     <!-- [Google Font : Public Sans] icon -->
     <link
       href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&amp;display=swap"
@@ -432,6 +436,7 @@
         </div>
       </div>
     </div>
+    @vite('resources/js/app.js')
   </body>
   <!-- [Body] end -->
 </html>

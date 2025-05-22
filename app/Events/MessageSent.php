@@ -3,6 +3,7 @@
 namespace App\Events;
 
 use App\Models\Message;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -24,21 +25,23 @@ class MessageSent implements ShouldBroadcast
 
     public function broadcastOn(): PrivateChannel
     {
-        return new PrivateChannel('conversations.' . $this->message->conversation_id);
+        Log::info('Broadcasting event to conversation ' . $this->message->conversation_id);
+        return new PrivateChannel('private-conversations.' . $this->message->conversation_id);
     }
 
-    public function broadcastWith(): array
+    public function broadcastWith()
     {
         return [
             'message' => [
                 'id' => $this->message->id,
                 'body' => $this->message->body,
                 'sender_id' => $this->message->sender_id,
+                'created_at' => $this->message->created_at->toDateTimeString(),
                 'sender' => [
                     'name' => $this->message->sender->name,
                     'avatar_url' => $this->message->sender->avatar_url,
                 ],
-            ]
+            ],
         ];
     }
 }

@@ -515,6 +515,11 @@
         method: 'GET',
         success: function(response) {
           $('#chatbox').html(response);
+          if (window.loadChatBox) {
+            window.loadChatBox();
+          } else {
+            console.warn("loadChatBox tidak tersedia");
+          }
         },
         error: function() {
           alert('Gagal memuat pesan.');
