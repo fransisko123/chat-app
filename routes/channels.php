@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Conversation;
 use Illuminate\Support\Facades\Broadcast;
 
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
@@ -7,7 +8,6 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('private-conversations.{conversationId}', function ($user, $conversationId) {
-    $conversation = \App\Models\Conversation::find($conversationId);
-    return $conversation &&
-        ($conversation->user_one_id === $user->id || $conversation->user_two_id === $user->id);
+    $conversation = Conversation::find($conversationId);
+    return $conversation && ($conversation->user_one_id === $user->id || $conversation->user_two_id === $user->id);
 });
