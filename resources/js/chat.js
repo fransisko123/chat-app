@@ -6,17 +6,19 @@ export function initChatListener() {
 
     if (!conversationId || !window.Echo) return;
 
-    console.log("Akan subscribe ke channel:", `private-conversations.${conversationId}`);
+    // DEBUG AREA
+        // console.log("Akan subscribe ke channel:", `private-conversations.${conversationId}`);
 
-    const channel = window.Echo.private(`private-conversations.${conversationId}`);
-    console.log("Sudah subscribe, menunggu event...");
+        // const channel = window.Echo.private(`private-conversations.${conversationId}`);
+        // console.log("Sudah subscribe, menunggu event...");
 
-    channel.listen('MessageSent', (e) => {
-        console.log("Pesan diterima:", e.message);
-        const chatbox = document.querySelector('.chat-message .card-body');
-        
-        console.log("Chatbox ditemukan:", chatbox);
-    });
+        // channel.listen('MessageSent', (e) => {
+        //     console.log("Pesan diterima:", e.message);
+        //     const chatbox = document.querySelector('.chat-message .card-body');
+
+        //     console.log("Chatbox ditemukan:", chatbox);
+        // });
+    // DEBUG AREA END
 
     window.Echo.private(`private-conversations.${conversationId}`)
         .listen('MessageSent', (e) => {
@@ -62,6 +64,11 @@ export function initChatListener() {
                     </div>`;
 
             chatbox.insertAdjacentHTML('beforeend', messageHTML);
-            chatbox.scrollTop = chatbox.scrollHeight;
+
+            // Scroll ke bawah setelah pesan baru masuk
+            const scrollBlock = document.querySelector('.chat-message');
+            if (scrollBlock) {
+                scrollBlock.scrollTop = scrollBlock.scrollHeight;
+            }
         });
 }
