@@ -20,6 +20,7 @@ export function initChatListener() {
         // });
     // DEBUG AREA END
 
+    window.Echo.leave(`private-conversations.${conversationId}`);
     window.Echo.private(`private-conversations.${conversationId}`)
         .listen('MessageSent', (e) => {
             console.log("Pesan diterima:", e.message);

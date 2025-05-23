@@ -511,6 +511,10 @@
           $('#chatbox').html(response);
           if (window.loadChatBox) {
             window.loadChatBox();
+            const scrollBlock = document.querySelector('.chat-message');
+            if (scrollBlock) {
+                scrollBlock.scrollTop = scrollBlock.scrollHeight;
+            }
           } else {
             console.warn("loadChatBox tidak tersedia");
           }

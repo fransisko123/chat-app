@@ -132,7 +132,6 @@
                                 <img class="rounded-circle img-fluid wid-40"
                                     src="{{ $sender->avatar_url ?? asset('assets/images/user/avatar-3.jpg') }}"
                                     alt="{{ $sender->name }}">
-                                <i class="chat-badge bg-success"></i>
                             </div>
                         </div>
                         <div class="flex-grow-1 mx-3">
