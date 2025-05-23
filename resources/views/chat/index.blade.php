@@ -222,16 +222,10 @@
 
                 {{-- Chat Box --}}
                 <div id="chatbox" class="flex-grow-1 d-flex flex-column">
-                  @if ($activeConversation)
                     @include('chat._chatbox', [
                       'messages' => $messages,
                       'activeConversation' => $activeConversation
                     ])
-                  @else
-                    <div class="text-center text-muted py-5 flex-grow-1 d-flex align-items-center justify-content-center">
-                      Pilih percakapan untuk mulai chatting
-                    </div>
-                  @endif
                 </div>
 
                 <div
