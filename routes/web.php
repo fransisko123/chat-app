@@ -15,4 +15,5 @@ Route::middleware(['auth.login'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/chat', [ChatController::class, 'index'])->name('chat');
     Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
+    Route::get('/chat/unread-count/{conversation}', [ChatController::class, 'unreadCount'])->name('chat.unreadCount');
 });

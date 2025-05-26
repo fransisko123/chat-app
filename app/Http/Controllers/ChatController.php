@@ -19,6 +19,16 @@ class ChatController extends Controller
             ->with(['userOne', 'userTwo', 'latestMessage'])
             ->get();
 
+        // Hitung unread message count
+        foreach ($conversations as $conv) {
+            $conv->unread_count = $conv->messages
+                ->where('sender_id', '!=', $user->id) // bukan pesan kita sendiri
+                ->filter(function ($msg) use ($user) {
+                    return !$msg->reads->where('user_id', $user->id)->count();
+                })
+                ->count();
+        }
+
         $activeConversation = null;
         $messages = collect();
 
@@ -57,7 +67,7 @@ class ChatController extends Controller
             'body' => 'required|string|max:1000',
         ]);
 
-        $conversation = \App\Models\Conversation::findOrFail($request->conversation_id);
+        $conversation = Conversation::findOrFail($request->conversation_id);
 
         // Pastikan user adalah peserta conversation
         if (!in_array(auth()->id(), [$conversation->user_one_id, $conversation->user_two_id])) {
@@ -75,5 +85,12 @@ class ChatController extends Controller
         broadcast(new MessageSent($message))->toOthers();
 
         return response()->json(['status' => 'success']);
+    }
+
+    public function unreadCount(Conversation $conversation)
+    {
+        $user = auth()->user();
+        $unread = $conversation->unreadCountFor($user);
+        return response()->json(['unread' => $unread]);
     }
 }

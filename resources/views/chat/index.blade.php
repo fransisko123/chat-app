@@ -111,14 +111,18 @@
                                         <div
                                           class="flex-grow-1 position-relative"
                                         >
-                                          <span
-                                            class="mb-0 text-truncate position-absolute top-0 start-0 w-100"
-                                            >when meeting schedule</span
-                                          >
+                                          <span>Programmer</span>
                                         </div>
-                                        <span>1 week ago</span>
                                       </div>
                                     </div>
+                                     <div class="flex-grow-1 position-relative">
+                                      @php
+                                        $unread = $conv->unreadCountFor(auth()->user());
+                                      @endphp
+                                      @if ($unread > 0)
+                                        <span class="badge bg-info pc-h-badge">{{ $unread }}</span>
+                                      @endif
+                                     </div>
                                     <div class="dropdown">
                                       <a
                                         class="avtar avtar-xs btn-link-secondary dropdown-toggle arrow-none"

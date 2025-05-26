@@ -41,4 +41,15 @@ class Conversation extends Model
     {
         return $authUser->id === $this->user_one_id ? $this->userTwo : $this->userOne;
     }
+
+    // Returns unread message count for a given user
+    public function unreadCountFor(User $user)
+    {
+        return $this->messages()
+            ->where('sender_id', '!=', $user->id)
+            ->whereDoesntHave('reads', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+            ->count();
+    }
 }

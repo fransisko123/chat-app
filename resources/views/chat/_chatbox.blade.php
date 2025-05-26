@@ -191,13 +191,14 @@
               ></a>
             </li>
           </ul>
-          <input
-            type="text"
+          <textarea
             name="body"
+            rows="1"
             class="form-control shadow-none border-0 bg-transparent"
             placeholder="Type a Message"
             required
-          />
+            style="resize: none; overflow: hidden;"
+          ></textarea>
           <ul class="list-inline ms-auto mb-0">
             <li class="list-inline-item">
               <button type="submit" class="btn btn-primary">
@@ -225,7 +226,7 @@
 
       // debugger; // <--- Ini akan terpanggil jika form ada
 
-      const $input = $form.find('input[name="body"]');
+      const $input = $form.find('textarea[name="body"]');
       const body = $input.val().trim();
       if (!body) return;
 

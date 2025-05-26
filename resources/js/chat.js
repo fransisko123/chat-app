@@ -71,5 +71,20 @@ export function initChatListener() {
             if (scrollBlock) {
                 scrollBlock.scrollTop = scrollBlock.scrollHeight;
             }
+            
+            // Update unread badge in sidebar (real-time)
+            if (!isOwn) {
+                fetch(`/chat/unread-count/${e.message.conversation_id}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const badge = document.querySelector(
+                            `.conversation-item[data-id="${e.message.conversation_id}"] .badge.bg-info.pc-h-badge`
+                        );
+                        if (badge) {
+                            badge.textContent = data.unread > 0 ? data.unread : '';
+                            badge.style.display = data.unread > 0 ? '' : 'none';
+                        }
+                    });
+            }
         });
 }
