@@ -6,20 +6,6 @@ export function initChatListener() {
 
     if (!conversationId || !window.Echo) return;
 
-    // DEBUG AREA
-        // console.log("Akan subscribe ke channel:", `private-conversations.${conversationId}`);
-
-        // const channel = window.Echo.private(`private-conversations.${conversationId}`);
-        // console.log("Sudah subscribe, menunggu event...");
-
-        // channel.listen('MessageSent', (e) => {
-        //     console.log("Pesan diterima:", e.message);
-        //     const chatbox = document.querySelector('.chat-message .card-body');
-
-        //     console.log("Chatbox ditemukan:", chatbox);
-        // });
-    // DEBUG AREA END
-
     window.Echo.leave(`private-conversations.${conversationId}`);
     window.Echo.private(`private-conversations.${conversationId}`)
         .listen('MessageSent', (e) => {
@@ -66,25 +52,29 @@ export function initChatListener() {
 
             chatbox.insertAdjacentHTML('beforeend', messageHTML);
 
+            // Update unread badge in sidebar (real-time)
+            if (!isOwn) {
+                updateUnreadBadge(e.message.conversation_id);
+            }
+
             // Scroll ke bawah setelah pesan baru masuk
             const scrollBlock = document.querySelector('.chat-message');
             if (scrollBlock) {
                 scrollBlock.scrollTop = scrollBlock.scrollHeight;
             }
-            
-            // Update unread badge in sidebar (real-time)
-            if (!isOwn) {
-                fetch(`/chat/unread-count/${e.message.conversation_id}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        const badge = document.querySelector(
-                            `.conversation-item[data-id="${e.message.conversation_id}"] .badge.bg-info.pc-h-badge`
-                        );
-                        if (badge) {
-                            badge.textContent = data.unread > 0 ? data.unread : '';
-                            badge.style.display = data.unread > 0 ? '' : 'none';
-                        }
-                    });
-            }
         });
+
+        function updateUnreadBadge(conversationId) {
+            fetch(`/chat/unread-count/${conversationId}`)
+                .then(res => res.json())
+                .then(data => {
+                const badge = document.querySelector(
+                    `.conversation-item[data-id="${conversationId}"] .badge.bg-info.pc-h-badge`
+                );
+                if (badge) {
+                    badge.textContent = data.unread > 0 ? data.unread : '';
+                    badge.style.display = data.unread > 0 ? '' : 'none';
+                }
+            });
+        }
 }

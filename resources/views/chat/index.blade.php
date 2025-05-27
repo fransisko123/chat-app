@@ -115,14 +115,14 @@
                                         </div>
                                       </div>
                                     </div>
-                                     <div class="flex-grow-1 position-relative">
+                                    <div class="flex-grow-1 position-relative">
                                       @php
                                         $unread = $conv->unreadCountFor(auth()->user());
                                       @endphp
-                                      @if ($unread > 0)
-                                        <span class="badge bg-info pc-h-badge">{{ $unread }}</span>
-                                      @endif
-                                     </div>
+                                      <span class="badge bg-info pc-h-badge" style="{{ $unread > 0 ? '' : 'display:none;' }}">
+                                        {{ $unread > 0 ? $unread : '' }}
+                                      </span>
+                                    </div>
                                     <div class="dropdown">
                                       <a
                                         class="avtar avtar-xs btn-link-secondary dropdown-toggle arrow-none"

@@ -224,8 +224,6 @@
     $form.on('submit', async function (e) {
       e.preventDefault();
 
-      // debugger; // <--- Ini akan terpanggil jika form ada
-
       const $input = $form.find('textarea[name="body"]');
       const body = $input.val().trim();
       if (!body) return;
