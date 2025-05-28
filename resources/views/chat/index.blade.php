@@ -528,5 +528,28 @@
         }
       });
     });
+
+    // --- Real-time unread badge update for all conversations ---
+    if (window.Echo) {
+      $('.conversation-item').each(function() {
+        var conversationId = $(this).data('id');
+        window.Echo.private('private-conversations.' + conversationId)
+          .listen('MessageSent', function(e) {
+            // Update badge unread untuk conversation ini
+            fetch('/chat/unread-count/' + conversationId)
+              .then(res => res.json())
+              .then(data => {
+                var badge = document.querySelector(
+                  '.conversation-item[data-id="' + conversationId + '"] .badge.bg-info.pc-h-badge'
+                );
+                if (badge) {
+                  badge.textContent = data.unread > 0 ? data.unread : '';
+                  badge.style.display = data.unread > 0 ? '' : 'none';
+                }
+              });
+          });
+      });
+    }
+    // --- end real-time unread badge update ---
   });
 </script>
