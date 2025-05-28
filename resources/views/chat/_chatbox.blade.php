@@ -94,11 +94,31 @@
   <div class="card bg-light-dark shadow-none card-border-none mb-0">
     <div class="scroll-block chat-message" style="max-height: 100%; overflow-y: auto;">
       <div class="card-body">
+        @php
+            $userId = auth()->id();
+            $firstUnreadId = null;
+            foreach ($messages as $msg) {
+                if (
+                    $msg->sender_id != $userId &&
+                    !$msg->reads->where('user_id', $userId)->count()
+                ) {
+                    $firstUnreadId = $msg->id;
+                    break;
+                }
+            }
+        @endphp
         @foreach ($messages as $message)
             @php
-                $isOwnMessage = $message->sender_id === auth()->id();
-                $sender = $message->sender; // asumsi ada relasi 'sender'
+                $isOwnMessage = $message->sender_id === $userId;
+                $sender = $message->sender;
             @endphp
+
+            {{-- Divider Unread --}}
+            @if ($message->id === $firstUnreadId)
+                <div class="chat-unread-divider text-center my-4">
+                    <span class="badge bg-warning text-dark px-3 py-1">Unread</span>
+                </div>
+            @endif
 
             @if ($isOwnMessage)
                 {{-- Message Out --}}
@@ -250,3 +270,22 @@
     });
   });
 </script>
+
+<style>
+/* Tambahkan styling sederhana untuk divider */
+.chat-unread-divider {
+    position: relative;
+    text-align: center;
+    margin: 1.5rem 0;
+}
+.chat-unread-divider:before,
+.chat-unread-divider:after {
+    content: "";
+    display: inline-block;
+    width: 40%;
+    height: 1px;
+    background: #e0e0e0;
+    vertical-align: middle;
+    margin: 0 8px;
+}
+</style>

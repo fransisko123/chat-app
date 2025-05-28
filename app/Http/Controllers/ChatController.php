@@ -38,7 +38,10 @@ class ChatController extends Controller
 
             // Tandai semua pesan sudah dibaca user
             foreach ($activeConversation->messages as $message) {
-                $message->reads()->firstOrCreate(['user_id' => $user->id]);
+                $message->reads()->firstOrCreate(
+                    ['user_id' => $user->id],
+                    ['read_at' => now()]
+                );
             }
 
             $messages = $activeConversation->messages;
