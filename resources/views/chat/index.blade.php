@@ -119,7 +119,8 @@
                                       @php
                                         $unread = $conv->unreadCountFor(auth()->user());
                                       @endphp
-                                      <span class="badge bg-info pc-h-badge" style="{{ $unread > 0 ? '' : 'display:none;' }}">
+                                      <span class="badge bg-info pc-h-badge ms-1 py-1 px-2 rounded-pill fw-bold small"
+                                            style="{{ $unread > 0 ? '' : 'display:none;' }}; position: absolute; top: 50%; right: 0; transform: translateY(-50%); min-width: 1.5em; text-align: center;">
                                         {{ $unread > 0 ? $unread : '' }}
                                       </span>
                                     </div>
@@ -553,3 +554,15 @@
     // --- end real-time unread badge update ---
   });
 </script>
+
+<style>
+/* Responsive badge for mobile */
+@media (max-width: 576px) {
+  .pc-h-badge {
+    font-size: 0.75rem !important;
+    padding: 2px 7px !important;
+    min-width: 1.2em !important;
+    right: 2px !important;
+  }
+}
+</style>

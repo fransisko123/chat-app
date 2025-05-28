@@ -107,78 +107,88 @@
                 }
             }
         @endphp
-        @foreach ($messages as $message)
-            @php
-                $isOwnMessage = $message->sender_id === $userId;
-                $sender = $message->sender;
-            @endphp
+        @if ($messages->isEmpty())
+            <div class="text-center text-muted my-3 my-md-5 px-2 no-messages" style="font-size: 1rem;">
+                <p class="mb-0">No messages yet. Start the conversation!</p>
+            </div>
+        @else
+          @foreach ($messages as $message)
+              @php
+                  $isOwnMessage = $message->sender_id === $userId;
+                  $sender = $message->sender;
+              @endphp
 
-            {{-- Divider Unread --}}
-            @if ($message->id === $firstUnreadId)
-                <div class="chat-unread-divider text-center my-4">
-                    <span class="badge bg-warning text-dark px-3 py-1">Unread</span>
+              {{-- Divider Unread --}}
+              @if ($message->id === $firstUnreadId)
+                <div class="d-flex align-items-center my-3 my-sm-4">
+                  <div class="flex-grow-1 border-top border-danger border-2 opacity-100"></div>
+                  <span class="badge bg-warning text-dark mx-3 px-2 px-sm-3 py-1 fw-semibold rounded-pill">
+                    Unread
+                  </span>
+                  <div class="flex-grow-1 border-top border-danger border-2 opacity-100"></div>
                 </div>
-            @endif
+              @endif
 
-            @if ($isOwnMessage)
-                {{-- Message Out --}}
-                <div class="message-out">
-                    <div class="d-flex align-items-end flex-column">
-                        <p class="mb-1 text-muted">
-                            <small>{{ $message->created_at->diffForHumans() }}</small>
-                        </p>
-                        <div class="message d-flex align-items-end flex-column">
-                            <div class="d-flex align-items-center mb-1 chat-msg">
-                                <div class="flex-shrink-0">
-                                    <ul class="list-inline ms-auto mb-0 chat-msg-option">
-                                        {{-- dropdown opsional --}}
-                                    </ul>
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <div class="msg-content bg-primary">
-                                        <p class="mb-0 text-white">{{ $message->body }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @else
-                {{-- Message In --}}
-                <div class="message-in">
-                    <div class="d-flex">
-                        <div class="flex-shrink-0">
-                            <div class="chat-avtar">
-                                <img class="rounded-circle img-fluid wid-40"
-                                    src="{{ $sender->avatar_url ?? asset('assets/images/user/avatar-3.jpg') }}"
-                                    alt="{{ $sender->name }}">
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 mx-3">
-                            <div class="d-flex align-items-start flex-column">
-                                <p class="mb-1 text-muted">
-                                    {{ $sender->name }} <small>{{ $message->created_at->format('h:i A') }}</small>
-                                </p>
-                                <div class="message d-flex align-items-start flex-column">
-                                    <div class="d-flex align-items-center mb-1 chat-msg">
-                                        <div class="flex-grow-1 me-3">
-                                            <div class="msg-content card card-border-none mb-0">
-                                                <p class="mb-0">{{ $message->body }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex-shrink-0">
-                                            <ul class="list-inline ms-auto mb-0 chat-msg-option">
-                                                {{-- dropdown opsional --}}
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif
-        @endforeach
+              @if ($isOwnMessage)
+                  {{-- Message Out --}}
+                  <div class="message-out">
+                      <div class="d-flex align-items-end flex-column">
+                          <p class="mb-1 text-muted">
+                              <small>{{ $message->created_at->diffForHumans() }}</small>
+                          </p>
+                          <div class="message d-flex align-items-end flex-column">
+                              <div class="d-flex align-items-center mb-1 chat-msg">
+                                  <div class="flex-shrink-0">
+                                      <ul class="list-inline ms-auto mb-0 chat-msg-option">
+                                          {{-- dropdown opsional --}}
+                                      </ul>
+                                  </div>
+                                  <div class="flex-grow-1 ms-3">
+                                      <div class="msg-content bg-primary">
+                                          <p class="mb-0 text-white">{{ $message->body }}</p>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              @else
+                  {{-- Message In --}}
+                  <div class="message-in">
+                      <div class="d-flex">
+                          <div class="flex-shrink-0">
+                              <div class="chat-avtar">
+                                  <img class="rounded-circle img-fluid wid-40"
+                                      src="{{ $sender->avatar_url ?? asset('assets/images/user/avatar-3.jpg') }}"
+                                      alt="{{ $sender->name }}">
+                              </div>
+                          </div>
+                          <div class="flex-grow-1 mx-3">
+                              <div class="d-flex align-items-start flex-column">
+                                  <p class="mb-1 text-muted">
+                                      {{ $sender->name }} <small>{{ $message->created_at->format('h:i A') }}</small>
+                                  </p>
+                                  <div class="message d-flex align-items-start flex-column">
+                                      <div class="d-flex align-items-center mb-1 chat-msg">
+                                          <div class="flex-grow-1 me-3">
+                                              <div class="msg-content card card-border-none mb-0">
+                                                  <p class="mb-0">{{ $message->body }}</p>
+                                              </div>
+                                          </div>
+                                          <div class="flex-shrink-0">
+                                              <ul class="list-inline ms-auto mb-0 chat-msg-option">
+                                                  {{-- dropdown opsional --}}
+                                              </ul>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              @endif
+          @endforeach
+        @endif
       </div>
     </div>
   </div>

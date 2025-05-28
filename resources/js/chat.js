@@ -11,6 +11,7 @@ export function initChatListener() {
         .listen('MessageSent', (e) => {
             console.log("Pesan diterima:", e.message);
             const chatbox = document.querySelector('.chat-message .card-body');
+            const noMessage = document.querySelector('.no-messages');
             if (!chatbox) return;
 
             const isOwn = e.message.sender_id == userId;
@@ -51,7 +52,7 @@ export function initChatListener() {
                     </div>`;
 
             chatbox.insertAdjacentHTML('beforeend', messageHTML);
-
+            noMessage?.remove(); // Hapus pesan "Tidak ada pesan" jika ada
             // Update unread badge in sidebar (real-time)
             if (!isOwn) {
                 updateUnreadBadge(e.message.conversation_id);
