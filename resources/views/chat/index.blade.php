@@ -514,6 +514,19 @@
         method: 'GET',
         success: function(response) {
           $('#chatbox').html(response);
+          // Update badge unread: hide if already read
+          fetch('/chat/unread-count/' + conversationId)
+            .then(res => res.json())
+            .then(data => {
+              var badge = document.querySelector(
+                '.conversation-item[data-id="' + conversationId + '"] .badge.bg-info.pc-h-badge'
+              );
+              if (badge) {
+                badge.textContent = data.unread > 0 ? data.unread : '';
+                badge.style.display = data.unread > 0 ? '' : 'none';
+              }
+            });
+
           if (window.loadChatBox) {
             window.loadChatBox();
             const scrollBlock = document.querySelector('.chat-message');

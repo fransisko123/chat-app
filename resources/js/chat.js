@@ -9,7 +9,12 @@ export function initChatListener() {
     window.Echo.leave(`private-conversations.${conversationId}`);
     window.Echo.private(`private-conversations.${conversationId}`)
         .listen('MessageSent', (e) => {
-            console.log("Pesan diterima:", e.message);
+            // Tambahkan filter agar hanya pesan untuk conversation yang sedang dibuka yang dirender
+            if (String(e.message.conversation_id) !== String(conversationId)) {
+                // Pesan bukan untuk conversation ini, abaikan
+                return;
+            }
+
             const chatbox = document.querySelector('.chat-message .card-body');
             const noMessage = document.querySelector('.no-messages');
             if (!chatbox) return;
