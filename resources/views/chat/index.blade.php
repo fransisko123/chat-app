@@ -502,19 +502,95 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  $(document).ready(function() {
-    $('.conversation-item').click(function(e) {
-      e.preventDefault();
+  let currentConversationId = null;
+  let chatboxChannels = {}; // Simpan instance channel
 
+  function loadChatBox(conversationId) {
+    // Hapus listener MessageSent lama pada channel chatbox
+    if (window.Echo && currentConversationId) {
+      if (chatboxChannels[currentConversationId]) {
+        chatboxChannels[currentConversationId].stopListening('MessageSent');
+      }
+    }
+    currentConversationId = conversationId;
+
+    // Subscribe listener baru untuk chatbox aktif
+    if (window.Echo && conversationId) {
+      // Gunakan instance channel yang sama jika sudah ada
+      if (!chatboxChannels[conversationId]) {
+        chatboxChannels[conversationId] = window.Echo.private(`private-conversations.${conversationId}`);
+      }
+      chatboxChannels[conversationId]
+        .stopListening('MessageSent') // pastikan bersih sebelum listen ulang
+        .listen('MessageSent', function(e) {
+          if (String(e.message.conversation_id) !== String(conversationId)) return;
+
+          // Render pesan ke chatbox
+          const chatbox = document.querySelector('.chat-message .card-body');
+          const noMessage = document.querySelector('.no-messages');
+          if (!chatbox) return;
+
+          const userId = document.querySelector('meta[name="user-id"]')?.content;
+          const isOwn = e.message.sender_id == userId;
+          const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+          const messageHTML = isOwn
+              ? `
+                  <div class="message-out">
+                      <div class="d-flex align-items-end flex-column">
+                          <p class="mb-1 text-muted"><small>${time}</small></p>
+                          <div class="message d-flex align-items-end flex-column">
+                              <div class="d-flex align-items-center mb-1 chat-msg">
+                                  <div class="flex-grow-1 ms-3">
+                                      <div class="msg-content bg-primary">
+                                          <p class="mb-0 text-white">${e.message.body}</p>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>`
+              : `
+                  <div class="message-in">
+                      <div class="d-flex">
+                          <div class="chat-avtar">
+                              <img class="rounded-circle img-fluid wid-40"
+                                  src="${e.message.sender.avatar_url || '/assets/images/user/avatar-3.jpg'}" />
+                          </div>
+                          <div class="flex-grow-1 mx-3">
+                              <p class="mb-1 text-muted">${e.message.sender.name} <small>${time}</small></p>
+                              <div class="message d-flex align-items-start flex-column">
+                                  <div class="msg-content card card-border-none mb-0">
+                                      <p class="mb-0">${e.message.body}</p>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>`;
+
+          chatbox.insertAdjacentHTML('beforeend', messageHTML);
+          noMessage?.remove();
+          // Update unread badge in sidebar (real-time)
+          if (!isOwn) {
+              updateUnreadBadge(e.message.conversation_id);
+          }
+          // Scroll ke bawah setelah pesan baru masuk
+          const scrollBlock = document.querySelector('.chat-message');
+          if (scrollBlock) {
+              scrollBlock.scrollTop = scrollBlock.scrollHeight;
+          }
+        });
+    }
+  }
+
+  // Listener sidebar: hanya update badge unread, tidak render pesan
+  function initSidebarListeners() {
+  if (window.Echo) {
+    $('.conversation-item').each(function() {
       var conversationId = $(this).data('id');
-      var url = "{{ route('chat') }}" + "?conversation=" + conversationId;
-
-      $.ajax({
-        url: url,
-        method: 'GET',
-        success: function(response) {
-          $('#chatbox').html(response);
-          // Update badge unread: hide if already read
+      window.Echo.private('private-conversations.' + conversationId)
+        .listen('MessageSent', function(e) {
+          // Hanya update badge unread, jangan render pesan ke chatbox!
           fetch('/chat/unread-count/' + conversationId)
             .then(res => res.json())
             .then(data => {
@@ -526,6 +602,38 @@
                 badge.style.display = data.unread > 0 ? '' : 'none';
               }
             });
+        });
+    });
+  }
+}
+
+  function updateUnreadBadge(conversationId) {
+    fetch('/chat/unread-count/' + conversationId)
+      .then(res => res.json())
+      .then(data => {
+        var badge = document.querySelector(
+          '.conversation-item[data-id="' + conversationId + '"] .badge.bg-info.pc-h-badge'
+        );
+        if (badge) {
+          badge.textContent = data.unread > 0 ? data.unread : '';
+          badge.style.display = data.unread > 0 ? '' : 'none';
+        }
+      });
+  }
+
+  $(document).ready(function() {
+    $('.conversation-item').click(function(e) {
+      e.preventDefault();
+      var conversationId = $(this).data('id');
+      var url = "{{ route('chat') }}" + "?conversation=" + conversationId;
+
+      $.ajax({
+        url: url,
+        method: 'GET',
+        success: function(response) {
+          $('#chatbox').html(response);
+          loadChatBox(conversationId); // update listener chatbox aktif
+          updateUnreadBadge(conversationId);
 
           if (window.loadChatBox) {
             window.loadChatBox();
@@ -543,28 +651,13 @@
       });
     });
 
-    // --- Real-time unread badge update for all conversations ---
-    if (window.Echo) {
-      $('.conversation-item').each(function() {
-        var conversationId = $(this).data('id');
-        window.Echo.private('private-conversations.' + conversationId)
-          .listen('MessageSent', function(e) {
-            // Update badge unread untuk conversation ini
-            fetch('/chat/unread-count/' + conversationId)
-              .then(res => res.json())
-              .then(data => {
-                var badge = document.querySelector(
-                  '.conversation-item[data-id="' + conversationId + '"] .badge.bg-info.pc-h-badge'
-                );
-                if (badge) {
-                  badge.textContent = data.unread > 0 ? data.unread : '';
-                  badge.style.display = data.unread > 0 ? '' : 'none';
-                }
-              });
-          });
-      });
-    }
-    // --- end real-time unread badge update ---
+    // Inisialisasi listener pertama kali jika ada chatbox aktif
+    @if($activeConversation)
+      loadChatBox({{ $activeConversation->id }});
+    @endif
+
+    // Listener sidebar untuk badge unread
+    initSidebarListeners();
   });
 </script>
 
